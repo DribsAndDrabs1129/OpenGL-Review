@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		950C73041FDA20510040B591 /* TableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 950C73031FDA20510040B591 /* TableViewController.m */; };
 		950C730A1FDA387F0040B591 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 950C73091FDA387F0040B591 /* SecondViewController.m */; };
-		950C730C1FDA62610040B591 /* 5.gif in Resources */ = {isa = PBXBuildFile; fileRef = 950C730B1FDA62610040B591 /* 5.gif */; };
 		950C73141FDA632D0040B591 /* ZQLShaderCompiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 950C730E1FDA632C0040B591 /* ZQLShaderCompiler.m */; };
 		950C73151FDA632D0040B591 /* AGLKContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 950C730F1FDA632C0040B591 /* AGLKContext.m */; };
 		950C73161FDA632D0040B591 /* AGLKVertexAttribArrayBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 950C73101FDA632C0040B591 /* AGLKVertexAttribArrayBuffer.m */; };
@@ -53,7 +52,6 @@
 		950C73031FDA20510040B591 /* TableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TableViewController.m; sourceTree = "<group>"; };
 		950C73081FDA387F0040B591 /* SecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
 		950C73091FDA387F0040B591 /* SecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
-		950C730B1FDA62610040B591 /* 5.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = 5.gif; sourceTree = "<group>"; };
 		950C730E1FDA632C0040B591 /* ZQLShaderCompiler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZQLShaderCompiler.m; sourceTree = "<group>"; };
 		950C730F1FDA632C0040B591 /* AGLKContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AGLKContext.m; sourceTree = "<group>"; };
 		950C73101FDA632C0040B591 /* AGLKVertexAttribArrayBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AGLKVertexAttribArrayBuffer.m; sourceTree = "<group>"; };
@@ -191,7 +189,6 @@
 		953BA20C1FD9087C0072293E /* Image */ = {
 			isa = PBXGroup;
 			children = (
-				950C730B1FDA62610040B591 /* 5.gif */,
 				953BA20D1FD9087C0072293E /* 1.jpg */,
 				953BA20E1FD9087C0072293E /* 2.jpg */,
 				953BA20F1FD9087C0072293E /* 3.png */,
@@ -323,7 +320,6 @@
 				953BA21A1FD9089C0072293E /* luminance.fsh in Resources */,
 				953BA1DA1FD8E2130072293E /* Assets.xcassets in Resources */,
 				953BA2191FD9089C0072293E /* fragmentShader.fsh in Resources */,
-				950C730C1FDA62610040B591 /* 5.gif in Resources */,
 				953BA2141FD9087D0072293E /* 4.jpg in Resources */,
 				953BA2111FD9087D0072293E /* 1.jpg in Resources */,
 				953BA1D81FD8E2130072293E /* Main.storyboard in Resources */,

@@ -36,7 +36,7 @@ SceneVertex;
 {
     [super viewDidLoad];
     
-    picNameArr = @[@"1.jpg",@"2.jpg",@"3.png",@"4.jpg",@"5.gif"];
+    picNameArr = @[@"1.jpg",@"2.jpg",@"3.png",@"4.jpg"];
     
     picName = picNameArr[2];
     
