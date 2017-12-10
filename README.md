@@ -2,7 +2,7 @@
 
 ## For reference ##
 
-![image](https://raw.githubusercontent.com/MonkeyS914/SCSwipeTableViewCell/master/screenshort/1234.gif?2)
+![image](https://github.com/DribsAndDrabs1129/OpenGLReviewmaster/screenshort/test.gif?2)
 
 - use OpenGL ES to present image on screen with shader and common view
 
