@@ -2,7 +2,7 @@
 
 ## For reference ##
 
-![image](https://github.com/DribsAndDrabs1129/OpenGLReviewmaster/screenshort/test.gif?2)
+![image](https://github.com/DribsAndDrabs1129/OpenGLReview/blob/master/screenshot/test.gif?2)
 
 - use OpenGL ES to present image on screen with shader and common view
 
