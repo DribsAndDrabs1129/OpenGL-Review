@@ -53,7 +53,7 @@
     saturationPara = 1.0;
     brightnessPara = 0.0;
     
-    picNameArr = @[@"1.jpg",@"2.jpg",@"3.png",@"4.jpg"];
+    picNameArr = @[@"1.jpg",@"2.jpg",@"3.png",@"4.jpg",@"5.jpg",@"6.jpg",@"7.jpg"];
     
     picName = picNameArr[2];
     

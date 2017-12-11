@@ -486,17 +486,14 @@
     glEnableVertexAttribArray(_positionSlot);
     glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, GL_FALSE, 0, vertices);
     
+    const int texCoordX = 0;
+    const int texCoordY = 1;
     // normal
     static const GLfloat coords[] = {
-//        1, 0,
-//        1, 1,
-//        0, 0,
-//        0, 1
-        
-        0, 0,
-        1, 0,
-        0, 1,
-        1, 1
+            texCoordX,        texCoordY,          //左下
+        1 - texCoordX,        texCoordY,          //右下
+            texCoordX,    1 - texCoordY,          //左上
+        1 - texCoordX,    1 - texCoordY           //右上
     };
     
     glEnableVertexAttribArray(_textureCoordSlot);

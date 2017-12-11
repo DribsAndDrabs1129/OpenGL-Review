@@ -14,7 +14,7 @@ varying vec2 out_Saturation_Brightness;
 
 void main(void) {
     gl_Position = in_Position;
-    out_TexCoord = vec2(1.0 - in_TexCoord[1],1.0 - in_TexCoord[0]);
+    out_TexCoord = vec2(in_TexCoord[1], 1.0 - in_TexCoord[0]);
     out_Saturation_Brightness = in_Saturation_Brightness;
     out_greyScale = in_greyScale;
     out_negation = in_negation;

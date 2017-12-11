@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		950157861FDE5EB90032B3B1 /* 6.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 950157821FDE5EB90032B3B1 /* 6.jpg */; };
+		950157871FDE5EB90032B3B1 /* 5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 950157831FDE5EB90032B3B1 /* 5.jpg */; };
+		950157881FDE5EB90032B3B1 /* 7.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 950157841FDE5EB90032B3B1 /* 7.jpg */; };
 		950C73041FDA20510040B591 /* TableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 950C73031FDA20510040B591 /* TableViewController.m */; };
 		950C730A1FDA387F0040B591 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 950C73091FDA387F0040B591 /* SecondViewController.m */; };
 		950C73141FDA632D0040B591 /* ZQLShaderCompiler.m in Sources */ = {isa = PBXBuildFile; fileRef = 950C730E1FDA632C0040B591 /* ZQLShaderCompiler.m */; };
@@ -50,6 +53,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		950157821FDE5EB90032B3B1 /* 6.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 6.jpg; sourceTree = "<group>"; };
+		950157831FDE5EB90032B3B1 /* 5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 5.jpg; sourceTree = "<group>"; };
+		950157841FDE5EB90032B3B1 /* 7.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 7.jpg; sourceTree = "<group>"; };
 		950C73021FDA20510040B591 /* TableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TableViewController.h; sourceTree = "<group>"; };
 		950C73031FDA20510040B591 /* TableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TableViewController.m; sourceTree = "<group>"; };
 		950C73081FDA387F0040B591 /* SecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
@@ -193,6 +199,9 @@
 		953BA20C1FD9087C0072293E /* Image */ = {
 			isa = PBXGroup;
 			children = (
+				950157831FDE5EB90032B3B1 /* 5.jpg */,
+				950157821FDE5EB90032B3B1 /* 6.jpg */,
+				950157841FDE5EB90032B3B1 /* 7.jpg */,
 				953BA20D1FD9087C0072293E /* 1.jpg */,
 				953BA20E1FD9087C0072293E /* 2.jpg */,
 				953BA20F1FD9087C0072293E /* 3.png */,
@@ -321,6 +330,7 @@
 			files = (
 				953BA2121FD9087D0072293E /* 2.jpg in Resources */,
 				95CCC3FB1FDE1E99003C0487 /* vertexShaderiOSCamera.vsh in Resources */,
+				950157861FDE5EB90032B3B1 /* 6.jpg in Resources */,
 				953BA1DD1FD8E2130072293E /* LaunchScreen.storyboard in Resources */,
 				95CCC3F91FDE1B90003C0487 /* luminanceBGRA.fsh in Resources */,
 				953BA21B1FD9089C0072293E /* vertexShader.vsh in Resources */,
@@ -329,6 +339,8 @@
 				953BA1DA1FD8E2130072293E /* Assets.xcassets in Resources */,
 				953BA2191FD9089C0072293E /* fragmentShader.fsh in Resources */,
 				953BA2141FD9087D0072293E /* 4.jpg in Resources */,
+				950157871FDE5EB90032B3B1 /* 5.jpg in Resources */,
+				950157881FDE5EB90032B3B1 /* 7.jpg in Resources */,
 				953BA2111FD9087D0072293E /* 1.jpg in Resources */,
 				953BA1D81FD8E2130072293E /* Main.storyboard in Resources */,
 			);
