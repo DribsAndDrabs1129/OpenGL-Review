@@ -473,16 +473,16 @@
     CGFloat widthRatio = realRect.size.width/self.openGLView.bounds.size.width;
     CGFloat heightRatio = realRect.size.height/self.openGLView.bounds.size.height;
     
-    //    const GLfloat vertices[] = {
-    //        -1, -1, 0,   //左下
-    //        1,  -1, 0,   //右下
-    //        -1, 1,  0,   //左上
-    //        1,  1,  0 }; //右上
+//    const GLfloat vertices[] = {
+//            -1.0, -1, 0,   //左下
+//             1.0, -1, 0,   //右下
+//            -1.0,  1, 0,   //左上
+//             1.0,  1, 0 }; //右上
     const GLfloat vertices[] = {
-        -widthRatio, -heightRatio, 0,   //左下
-        widthRatio,  -heightRatio, 0,   //右下
-        -widthRatio, heightRatio,  0,   //左上
-        widthRatio,  heightRatio,  0 }; //右上
+        -widthRatio, -heightRatio,  0,   //左下
+         widthRatio, -heightRatio,  0,   //右下
+        -widthRatio,  heightRatio,  0,   //左上
+         widthRatio,  heightRatio,  0 }; //右上
     glEnableVertexAttribArray(_positionSlot);
     glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, GL_FALSE, 0, vertices);
     
@@ -539,7 +539,10 @@
     glEnableVertexAttribArray(_enableNegation);
     glVertexAttribPointer(_enableNegation, 1, GL_FLOAT, GL_FALSE, 0, negation);
     
+    glClear(GL_COLOR_BUFFER_BIT);//若image与view 的bounds不匹配时，会出现边缘闪屏的情况
+    
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
     [_eaglContext presentRenderbuffer:GL_RENDERBUFFER];
 }
 
