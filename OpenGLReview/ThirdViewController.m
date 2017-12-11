@@ -74,6 +74,7 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     self.backView.hidden = !self.backView.hidden;
+    self.navigationController.navigationBarHidden = !self.navigationController.navigationBarHidden;
 }
 
 - (IBAction)changeAction:(UIButton *)sender {
@@ -153,8 +154,8 @@
     // Specify the pixel format
     output.videoSettings = [NSDictionary dictionaryWithObjectsAndKeys:
                             [NSNumber numberWithInt:kCVPixelFormatType_32BGRA], kCVPixelBufferPixelFormatTypeKey,
-                            [NSNumber numberWithInt: 320], (id)kCVPixelBufferWidthKey,
-                            [NSNumber numberWithInt: 240], (id)kCVPixelBufferHeightKey,
+                            [NSNumber numberWithInt: ViewWidth], (id)kCVPixelBufferWidthKey,
+                            [NSNumber numberWithInt: ViewHeight/2.0], (id)kCVPixelBufferHeightKey,
                             nil, nil];
     
     AVCaptureVideoPreviewLayer* preLayer = [AVCaptureVideoPreviewLayer layerWithSession: session];
@@ -183,7 +184,65 @@
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection{
     // Create a UIImage from the sample buffer data
-    [self getBufferData:sampleBuffer];
+    [self getBufferData1:sampleBuffer];
+}
+
+- (void)getBufferData1:(CMSampleBufferRef)sampleBuffer{
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    
+    // Lock the base address of the pixel buffer
+    CVPixelBufferLockBaseAddress(imageBuffer,0);
+    
+    // Get the number of bytes per row for the pixel buffer
+//    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+    
+    // Get the pixel buffer width and height
+    size_t width = CVPixelBufferGetWidth(imageBuffer);
+    size_t height = CVPixelBufferGetHeight(imageBuffer);
+    
+    // Create a device-dependent RGB color space
+//    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    
+//    if (!colorSpace){
+//        NSLog(@"CGColorSpaceCreateDeviceRGB failure");
+//    }
+
+    // Get the base address of the pixel buffer
+    void *baseAddress = CVPixelBufferGetBaseAddress(imageBuffer);
+    
+    // Get the data size for contiguous planes of the pixel buffer.
+//    size_t bufferSize = CVPixelBufferGetDataSize(imageBuffer);
+    
+    // Create a Quartz direct-access data provider that uses data we supply
+//    CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, baseAddress, bufferSize,NULL);
+    
+    // Create a bitmap image from data supplied by our data provider
+//    CGImageRef cgImage = CGImageCreate(width, height, 8, 32, bytesPerRow, colorSpace, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little, provider, NULL, true, kCGRenderingIntentDefault);
+//    CGDataProviderRelease(provider);
+//    CGColorSpaceRelease(colorSpace);
+//    CGImageRelease(cgImage);
+    CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        glDeleteTextures(1, &texName);
+        
+        glEnable(GL_TEXTURE_2D);
+        glGenTextures(1, &texName);
+        glBindTexture(GL_TEXTURE_2D, texName);
+        
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, baseAddress);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texName);
+        glUniform1i(_textureSlot, 1);
+        [self drawTrangle];
+    });
 }
 
 - (void)getBufferData:(CMSampleBufferRef)sampleBuffer{
@@ -220,6 +279,7 @@
         glBindTexture(GL_TEXTURE_2D, texName);
         glUniform1i(_textureSlot, 1);
         [self drawTrangle];
+//        self.testImageView.image = image;
     });
     
     CGContextRelease(context);
@@ -287,9 +347,17 @@
 }
 
 - (void)setShader{
-    GLuint vertexShaderName = [self compileShader:@"vertexShader.vsh" withType:GL_VERTEX_SHADER];
-    //    GLuint fragmenShaderName = [self compileShader:@"fragmentShader.fsh" withType:GL_FRAGMENT_SHADER];
-    GLuint fragmenShaderName = [self compileShader:@"luminance.fsh" withType:GL_FRAGMENT_SHADER];
+    GLuint vertexShaderName = [self compileShader:@"vertexShaderiOSCamera.vsh" withType:GL_VERTEX_SHADER];
+    if (!vertexShaderName) {
+        NSLog(@"vsh complie error");
+        return;
+    }
+
+    GLuint fragmenShaderName = [self compileShader:@"luminanceBGRA.fsh" withType:GL_FRAGMENT_SHADER];
+    if (!fragmenShaderName) {
+        NSLog(@"fsh complie error");
+        return;
+    }
     
     _programHandle = glCreateProgram();
     glAttachShader(_programHandle, vertexShaderName);
@@ -420,10 +488,15 @@
     
     // normal
     static const GLfloat coords[] = {
-        1, 0,
-        1, 1,
+//        1, 0,
+//        1, 1,
+//        0, 0,
+//        0, 1
+        
         0, 0,
-        0, 1
+        1, 0,
+        0, 1,
+        1, 1
     };
     
     glEnableVertexAttribArray(_textureCoordSlot);

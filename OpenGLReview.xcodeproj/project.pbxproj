@@ -28,6 +28,8 @@
 		953BA2191FD9089C0072293E /* fragmentShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 953BA2161FD9089C0072293E /* fragmentShader.fsh */; };
 		953BA21A1FD9089C0072293E /* luminance.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 953BA2171FD9089C0072293E /* luminance.fsh */; };
 		953BA21B1FD9089C0072293E /* vertexShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 953BA2181FD9089C0072293E /* vertexShader.vsh */; };
+		95CCC3F91FDE1B90003C0487 /* luminanceBGRA.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 95CCC3F81FDE1B90003C0487 /* luminanceBGRA.fsh */; };
+		95CCC3FB1FDE1E99003C0487 /* vertexShaderiOSCamera.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 95CCC3FA1FDE1E99003C0487 /* vertexShaderiOSCamera.vsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +85,8 @@
 		953BA2161FD9089C0072293E /* fragmentShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = fragmentShader.fsh; sourceTree = "<group>"; };
 		953BA2171FD9089C0072293E /* luminance.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = luminance.fsh; sourceTree = "<group>"; };
 		953BA2181FD9089C0072293E /* vertexShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vertexShader.vsh; sourceTree = "<group>"; };
+		95CCC3F81FDE1B90003C0487 /* luminanceBGRA.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = luminanceBGRA.fsh; sourceTree = "<group>"; };
+		95CCC3FA1FDE1E99003C0487 /* vertexShaderiOSCamera.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vertexShaderiOSCamera.vsh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -200,6 +204,8 @@
 		953BA2151FD9089C0072293E /* Shader */ = {
 			isa = PBXGroup;
 			children = (
+				95CCC3FA1FDE1E99003C0487 /* vertexShaderiOSCamera.vsh */,
+				95CCC3F81FDE1B90003C0487 /* luminanceBGRA.fsh */,
 				953BA2161FD9089C0072293E /* fragmentShader.fsh */,
 				953BA2171FD9089C0072293E /* luminance.fsh */,
 				953BA2181FD9089C0072293E /* vertexShader.vsh */,
@@ -314,7 +320,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				953BA2121FD9087D0072293E /* 2.jpg in Resources */,
+				95CCC3FB1FDE1E99003C0487 /* vertexShaderiOSCamera.vsh in Resources */,
 				953BA1DD1FD8E2130072293E /* LaunchScreen.storyboard in Resources */,
+				95CCC3F91FDE1B90003C0487 /* luminanceBGRA.fsh in Resources */,
 				953BA21B1FD9089C0072293E /* vertexShader.vsh in Resources */,
 				953BA2131FD9087D0072293E /* 3.png in Resources */,
 				953BA21A1FD9089C0072293E /* luminance.fsh in Resources */,
