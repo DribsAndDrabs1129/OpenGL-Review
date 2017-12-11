@@ -76,6 +76,7 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     self.backView.hidden = !self.backView.hidden;
+    self.navigationController.navigationBarHidden = !self.navigationController.navigationBarHidden;
 }
 
 - (IBAction)changeAction:(UIButton *)sender {
