@@ -6,13 +6,18 @@
 //  Copyright © 2017年 HUST. All rights reserved.
 //
 
-#import "FirstViewController.h"
+#import "ForthViewController.h"
 #import <OpenGLES/ES2/gl.h>
 #import <AVFoundation/AVFoundation.h>
 
 #define  TEST_PIC_NAME @"blue.png"
 
-@interface FirstViewController ()
+typedef NS_ENUM(NSUInteger, OpenGLShaderType) {
+    SC_OPENGL_SHDER_FILTER_MOTIONBLUR,
+    SC_OPENGL_SHDER_FILTER_GAUSSIANBLUR
+};
+
+@interface ForthViewController ()
 {
     EAGLContext *_eaglContext;
     CAEAGLLayer *_eaglLayer;
@@ -25,49 +30,57 @@
     GLuint _textureSlot;
     GLuint _textureCoordSlot;
     GLuint _colorSlot;
-    GLuint _saturation;
-    GLuint _brightness;
+    GLuint _Saturation_brightness;
     GLuint _enableGrayScale;
     GLuint _enableNegation;
     
     GLuint _programHandle;
     
-    int grayScalePara;          // 0 or 1
-    int negationPara;           // 0 or 1
-    CGFloat saturationPara;
-    CGFloat brightnessPara;
-    
     NSArray *picNameArr;
     NSString *picName;
+    
+    //boxblurfilter
+    GLuint _upOffset;
+    GLuint _bottomOffset;
+    GLuint _radiusOffset;
+    GLuint _dir;
+    
+    CGFloat upPara;
+    CGFloat bottomPara;
+    CGFloat radiusPara;
+    OpenGLShaderType shaderType;
+    
+    BOOL shouldUnion;
 }
 
 @end
 
-@implementation FirstViewController
+@implementation ForthViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    grayScalePara = 0.0;
-    negationPara = 0;
-    saturationPara = 1.0;
-    brightnessPara = 0.0;
+    upPara = 0.0;
+    bottomPara = 0.0;
+    shouldUnion = NO;
+    
+    shaderType = SC_OPENGL_SHDER_FILTER_MOTIONBLUR;
     
     picNameArr = @[@"1.jpg",@"2.jpg",@"3.png",@"4.jpg",@"5.jpg",@"6.jpg",@"7.jpg"];
     
     picName = picNameArr[2];
     
     [self setupOpenGL];
-
+    
     [self setRenderBuffer];
-
+    
     [self setViewPort];
-
+    
     [self setShader];
-
+    
     [self setTexture];
-
+    
     [self drawTrangle];
     
     [self.view bringSubviewToFront:self.backView];
@@ -88,33 +101,53 @@
     glClear(GL_COLOR_BUFFER_BIT);
     
     [self setTexture];
-
+    
     [self drawTrangle];
 }
 
 - (IBAction)switchValueChanged:(UISwitch *)sender {
-    if (_grayScaleSwitch == sender) {
-        grayScalePara = sender.on ? 1 : 0;
-    }
-    if (_negationSwitch == sender) {
-        negationPara = sender.on ? 1 : 0;
+    if (_leftSwitch == sender) {
+        if (_leftSwitch.isOn) {
+            shouldUnion = YES;
+        }
+        else{
+            shouldUnion = NO;
+        }
     }
     
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    
+    [self setShader];
+    [self setTexture];
     [self drawTrangle];
 }
 
 - (IBAction)valueChanged:(UISlider *)sender {
-    CGFloat temValue = sender.value / 2.0;
-    if (_saturationSlider == sender) {
-        saturationPara = temValue + 1.0;
-        _saturationLabel.text = [NSString stringWithFormat:@"%.2f",temValue];
+    CGFloat temValue = sender.value/1000.0;//0 ~ 0.1
+    temValue = temValue;
+    NSLog(@"%f",temValue);
+    
+    if (shouldUnion && shaderType == SC_OPENGL_SHDER_FILTER_MOTIONBLUR && _radiusSlider != sender) {
+        upPara = temValue;
+        bottomPara = temValue;
+        _upLabel.text = [NSString stringWithFormat:@"%.0f",(temValue)* 1000.0];
+        _bottomLabel.text = [NSString stringWithFormat:@"%.0f",(temValue)* 1000.0];
+        _upSlider.value = sender.value;
+        _bottomSlider.value = sender.value;
     }
-    else if (_brightnessSlider == sender){
-        brightnessPara = temValue;
-        _brightnessLabel.text = [NSString stringWithFormat:@"%.2f",temValue];
+    else{
+        if (_upSlider == sender) {
+            upPara = temValue;
+            _upLabel.text = [NSString stringWithFormat:@"%.0f",(temValue)* 1000.0];
+        }
+        else if (_bottomSlider == sender){
+            bottomPara = temValue;
+            _bottomLabel.text = [NSString stringWithFormat:@"%.0f",(temValue)* 1000.0];
+        }
+        else if (_radiusSlider == sender){
+            radiusPara = temValue;
+            _radiusLabel.text = [NSString stringWithFormat:@"%.1f",(temValue)];
+        }
     }
     
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -181,9 +214,14 @@
 - (void)setShader{
     NSString *vshName = nil;
     NSString *fshName = nil;
-    
-    vshName = @"vertexShader.vsh";
-    fshName = @"luminance.fsh";
+    if (shaderType == SC_OPENGL_SHDER_FILTER_MOTIONBLUR) {
+        vshName = @"MotionBlurVertex.vsh";
+        fshName = @"MotionBlurFragment.fsh";
+    }
+    else if (shaderType == SC_OPENGL_SHDER_FILTER_GAUSSIANBLUR){
+        vshName = @"GaussianBlurFilterVertex.vsh";
+        fshName = @"GaussianBlurFilterFragment.fsh";
+    }
     
     GLuint vertexShaderName = [self compileShader:vshName withType:GL_VERTEX_SHADER];
     if (!vertexShaderName) {
@@ -213,16 +251,19 @@
         exit(1);
     }
     
-    _positionSlot       = glGetAttribLocation(_programHandle,[@"in_Position" UTF8String]);
-    _textureSlot        = glGetUniformLocation(_programHandle, [@"in_Texture" UTF8String]);
-    _textureCoordSlot   = glGetAttribLocation(_programHandle, [@"in_TexCoord" UTF8String]);
-    _colorSlot          = glGetAttribLocation(_programHandle, [@"in_Color" UTF8String]);
+    _positionSlot = glGetAttribLocation(_programHandle,[@"in_Position" UTF8String]);
+    _textureSlot = glGetUniformLocation(_programHandle, [@"in_Texture" UTF8String]);
+    _textureCoordSlot = glGetAttribLocation(_programHandle, [@"in_TexCoord" UTF8String]);
+    _colorSlot = glGetAttribLocation(_programHandle, [@"in_Color" UTF8String]);
     
-    //uniform
-    _saturation         = glGetUniformLocation(_programHandle, [@"saturation" UTF8String]);
-    _brightness         = glGetUniformLocation(_programHandle, [@"brightness" UTF8String]);
-    _enableGrayScale    = glGetUniformLocation(_programHandle, [@"greyScale" UTF8String]);
-    _enableNegation     = glGetUniformLocation(_programHandle, [@"negation" UTF8String]);
+    if (shaderType == SC_OPENGL_SHDER_FILTER_MOTIONBLUR){
+        _upOffset = glGetUniformLocation(_programHandle, [@"texelWidthOffset" UTF8String]);
+        _bottomOffset = glGetUniformLocation(_programHandle, [@"texelHeightOffset" UTF8String]);
+    }
+    else if (shaderType == SC_OPENGL_SHDER_FILTER_GAUSSIANBLUR){
+        _radiusOffset = glGetUniformLocation(_programHandle, [@"radius" UTF8String]);
+        _dir = glGetUniformLocation(_programHandle, [@"dir" UTF8String]);
+    }
     
     glUseProgram(_programHandle);
 }
@@ -340,18 +381,15 @@
     glEnableVertexAttribArray(_colorSlot);
     glVertexAttribPointer(_colorSlot, 4, GL_FLOAT, GL_FALSE, 0, colors);
     
-    //灰度图
-    glUniform1i(_enableGrayScale, grayScalePara);
-
-    //取反
-    glUniform1i(_enableNegation, negationPara);
+    if (shaderType == SC_OPENGL_SHDER_FILTER_MOTIONBLUR){
+        glUniform1f(_upOffset, upPara);
+        glUniform1f(_bottomOffset, bottomPara);
+    }
+    else if (shaderType == SC_OPENGL_SHDER_FILTER_GAUSSIANBLUR){
+        glUniform1f(_radiusOffset, radiusPara/100.0);
+        glUniform2f(_dir, 10.0, 10.0);
+    }
     
-    //亮度
-    glUniform1f(_brightness, brightnessPara);
-    
-    //色度
-    glUniform1f(_saturation, saturationPara);
-
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     [_eaglContext presentRenderbuffer:GL_RENDERBUFFER];
 }
@@ -363,3 +401,4 @@
 
 
 @end
+

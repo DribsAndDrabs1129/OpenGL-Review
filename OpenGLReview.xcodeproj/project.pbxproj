@@ -28,9 +28,11 @@
 		953BA2121FD9087D0072293E /* 2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 953BA20E1FD9087C0072293E /* 2.jpg */; };
 		953BA2131FD9087D0072293E /* 3.png in Resources */ = {isa = PBXBuildFile; fileRef = 953BA20F1FD9087C0072293E /* 3.png */; };
 		953BA2141FD9087D0072293E /* 4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 953BA2101FD9087C0072293E /* 4.jpg */; };
-		953BA2191FD9089C0072293E /* fragmentShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 953BA2161FD9089C0072293E /* fragmentShader.fsh */; };
 		953BA21A1FD9089C0072293E /* luminance.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 953BA2171FD9089C0072293E /* luminance.fsh */; };
 		953BA21B1FD9089C0072293E /* vertexShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 953BA2181FD9089C0072293E /* vertexShader.vsh */; };
+		957D0EAE1FE20E400081AD95 /* MotionBlurVertex.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 957D0EAB1FE20E400081AD95 /* MotionBlurVertex.vsh */; };
+		957D0EAF1FE20E400081AD95 /* MotionBlurFragment.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 957D0EAC1FE20E400081AD95 /* MotionBlurFragment.fsh */; };
+		957D0EB61FE23D5C0081AD95 /* ForthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 957D0EB51FE23D5C0081AD95 /* ForthViewController.m */; };
 		95CCC3F91FDE1B90003C0487 /* luminanceBGRA.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 95CCC3F81FDE1B90003C0487 /* luminanceBGRA.fsh */; };
 		95CCC3FB1FDE1E99003C0487 /* vertexShaderiOSCamera.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 95CCC3FA1FDE1E99003C0487 /* vertexShaderiOSCamera.vsh */; };
 /* End PBXBuildFile section */
@@ -88,9 +90,12 @@
 		953BA20E1FD9087C0072293E /* 2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 2.jpg; sourceTree = "<group>"; };
 		953BA20F1FD9087C0072293E /* 3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 3.png; sourceTree = "<group>"; };
 		953BA2101FD9087C0072293E /* 4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 4.jpg; sourceTree = "<group>"; };
-		953BA2161FD9089C0072293E /* fragmentShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = fragmentShader.fsh; sourceTree = "<group>"; };
 		953BA2171FD9089C0072293E /* luminance.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = luminance.fsh; sourceTree = "<group>"; };
 		953BA2181FD9089C0072293E /* vertexShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vertexShader.vsh; sourceTree = "<group>"; };
+		957D0EAB1FE20E400081AD95 /* MotionBlurVertex.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = MotionBlurVertex.vsh; sourceTree = "<group>"; };
+		957D0EAC1FE20E400081AD95 /* MotionBlurFragment.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = MotionBlurFragment.fsh; sourceTree = "<group>"; };
+		957D0EB41FE23D5B0081AD95 /* ForthViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ForthViewController.h; sourceTree = "<group>"; };
+		957D0EB51FE23D5C0081AD95 /* ForthViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ForthViewController.m; sourceTree = "<group>"; };
 		95CCC3F81FDE1B90003C0487 /* luminanceBGRA.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = luminanceBGRA.fsh; sourceTree = "<group>"; };
 		95CCC3FA1FDE1E99003C0487 /* vertexShaderiOSCamera.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vertexShaderiOSCamera.vsh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -163,6 +168,8 @@
 				953BA1D11FD8E2130072293E /* AppDelegate.m */,
 				950C73021FDA20510040B591 /* TableViewController.h */,
 				950C73031FDA20510040B591 /* TableViewController.m */,
+				957D0EB41FE23D5B0081AD95 /* ForthViewController.h */,
+				957D0EB51FE23D5C0081AD95 /* ForthViewController.m */,
 				950C73171FDA7D650040B591 /* ThirdViewController.h */,
 				950C73181FDA7D650040B591 /* ThirdViewController.m */,
 				950C73081FDA387F0040B591 /* SecondViewController.h */,
@@ -213,13 +220,22 @@
 		953BA2151FD9089C0072293E /* Shader */ = {
 			isa = PBXGroup;
 			children = (
+				957D0EAA1FE20E400081AD95 /* filterShader */,
 				95CCC3FA1FDE1E99003C0487 /* vertexShaderiOSCamera.vsh */,
 				95CCC3F81FDE1B90003C0487 /* luminanceBGRA.fsh */,
-				953BA2161FD9089C0072293E /* fragmentShader.fsh */,
-				953BA2171FD9089C0072293E /* luminance.fsh */,
 				953BA2181FD9089C0072293E /* vertexShader.vsh */,
+				953BA2171FD9089C0072293E /* luminance.fsh */,
 			);
 			path = Shader;
+			sourceTree = "<group>";
+		};
+		957D0EAA1FE20E400081AD95 /* filterShader */ = {
+			isa = PBXGroup;
+			children = (
+				957D0EAB1FE20E400081AD95 /* MotionBlurVertex.vsh */,
+				957D0EAC1FE20E400081AD95 /* MotionBlurFragment.fsh */,
+			);
+			path = filterShader;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -328,16 +344,17 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				957D0EAF1FE20E400081AD95 /* MotionBlurFragment.fsh in Resources */,
 				953BA2121FD9087D0072293E /* 2.jpg in Resources */,
 				95CCC3FB1FDE1E99003C0487 /* vertexShaderiOSCamera.vsh in Resources */,
 				950157861FDE5EB90032B3B1 /* 6.jpg in Resources */,
 				953BA1DD1FD8E2130072293E /* LaunchScreen.storyboard in Resources */,
 				95CCC3F91FDE1B90003C0487 /* luminanceBGRA.fsh in Resources */,
 				953BA21B1FD9089C0072293E /* vertexShader.vsh in Resources */,
+				957D0EAE1FE20E400081AD95 /* MotionBlurVertex.vsh in Resources */,
 				953BA2131FD9087D0072293E /* 3.png in Resources */,
 				953BA21A1FD9089C0072293E /* luminance.fsh in Resources */,
 				953BA1DA1FD8E2130072293E /* Assets.xcassets in Resources */,
-				953BA2191FD9089C0072293E /* fragmentShader.fsh in Resources */,
 				953BA2141FD9087D0072293E /* 4.jpg in Resources */,
 				950157871FDE5EB90032B3B1 /* 5.jpg in Resources */,
 				950157881FDE5EB90032B3B1 /* 7.jpg in Resources */,
@@ -367,6 +384,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				957D0EB61FE23D5C0081AD95 /* ForthViewController.m in Sources */,
 				950C730A1FDA387F0040B591 /* SecondViewController.m in Sources */,
 				950C73141FDA632D0040B591 /* ZQLShaderCompiler.m in Sources */,
 				950C73151FDA632D0040B591 /* AGLKContext.m in Sources */,

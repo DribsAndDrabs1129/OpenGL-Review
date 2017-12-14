@@ -1,10 +1,10 @@
 precision mediump float;
 uniform sampler2D in_Texture;
 
-varying vec2 out_Saturation_Brightness;
-
-varying float out_greyScale;
-varying float out_negation;
+uniform float saturation;
+uniform float brightness;
+uniform int greyScale;
+uniform int negation;
 
 varying vec2 out_TexCoord;
 varying vec3 greyScaleColor;
@@ -19,19 +19,19 @@ void main(void) {
     vec3 greyScaleColor = vec3(luminance);
 
     //saturation
-    textureColor = vec4(mix(greyScaleColor, textureColor.rgb, out_Saturation_Brightness[0]), textureColor.w);
+    textureColor = vec4(mix(greyScaleColor, textureColor.rgb, saturation), textureColor.w);
     
     //brightness
-    textureColor = vec4(textureColor.rgb + vec3(out_Saturation_Brightness[1]), textureColor.w);
+    textureColor = vec4(textureColor.rgb + vec3(brightness), textureColor.w);
 
     //greyscale
-    if (out_greyScale == 1.0) {
+    if (greyScale == 1) {
         luminance = dot(textureColor.rgb, W);
         textureColor = vec4(vec3(luminance), textureColor.w);
     }
     
     //negation
-    if (out_negation == 1.0) {
+    if (negation == 1) {
         textureColor = vec4(vec3(1.0 - textureColor.r, 1.0 - textureColor.g, 1.0 - textureColor.b), textureColor.w);
     }
 
