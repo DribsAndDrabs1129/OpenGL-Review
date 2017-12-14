@@ -20,4 +20,9 @@
 
 - use OpenGL ES shader to blur an image (motion blur)
 
+*自己总结了下*
+---
+
+![总结](http://blog.csdn.net/u013883974/article/details/78763978 "OpenGL ES 渲染和简单的滤镜效果")
+
 - for more func ...
