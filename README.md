@@ -2,6 +2,8 @@
 
 ## For reference ##
 
+**PS:** 图片来自Facebook项目中，忘记是哪个项目了，觉得很好看就拿过来直接用了😂
+
 ![image](https://github.com/DribsAndDrabs1129/OpenGLReview/blob/master/screenshot/test.gif?2)
 
 ***Dec 10, 2017***
