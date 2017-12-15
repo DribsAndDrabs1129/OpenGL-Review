@@ -21,7 +21,6 @@
 - use OpenGL ES shader to process real time data from camera based on brightness, luminence and saturation
 
 *Dec 14, 2017*
----
 
 - use OpenGL ES shader to blur an image (motion blur)
 
@@ -33,4 +32,4 @@
 **For more**
 ---
 
-Please looking forward to this project :)
+Please looking forward to this project  :)
