@@ -162,6 +162,14 @@
                                             <action selector="switchValueChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="MGD-dH-5bj"/>
                                         </connections>
                                     </switch>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Lv-YX-2Tg">
+                                        <rect key="frame" x="293" y="58" width="70" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="OffScreen"/>
+                                        <connections>
+                                            <action selector="offScreenAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Mnw-v1-GBJ"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>

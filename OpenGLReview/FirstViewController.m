@@ -31,6 +31,7 @@
     GLuint _enableNegation;
     
     GLuint _programHandle;
+    GLuint _offscreenFramebuffer;
     
     int grayScalePara;          // 0 or 1
     int negationPara;           // 0 or 1
@@ -71,9 +72,102 @@
     [self drawTrangle];
     
     [self.view bringSubviewToFront:self.backView];
+    
+    UIImage *image = [UIImage imageNamed:picName];
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Tips" message:@"Test original read image buffer" preferredStyle:UIAlertControllerStyleAlert];
+    [self presentViewController:alert animated:YES completion:nil];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [alert dismissViewControllerAnimated:YES completion:nil];
+        [self drawRaw];
+        [self getImageFromBuffer:image.size.width withHeight:image.size.height];
+    });
+    
+}
+
+#pragma mark - OffScreen buffer
+- (void)createOffscreenBuffer:(UIImage *)image {
+    glGenFramebuffers(1, &_offscreenFramebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, _offscreenFramebuffer);
+    
+    //Create the texture
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,  image.size.width, image.size.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    //Bind the texture to your FBO
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+    
+    //Test if everything failed
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if(status != GL_FRAMEBUFFER_COMPLETE) {
+        printf("failed to make complete framebuffer object %x", status);
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+- (void)getImageFromBuffer:(int)width withHeight:(int)height {
+    GLint x = 0, y = 0;
+    NSInteger dataLength = width * height * 4;
+    GLubyte *data = (GLubyte*)malloc(dataLength * sizeof(GLubyte));
+    
+    glPixelStorei(GL_PACK_ALIGNMENT, 4);
+    glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    
+    CGDataProviderRef ref = CGDataProviderCreateWithData(NULL, data, dataLength, NULL);
+    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+    CGImageRef iref = CGImageCreate(width, height, 8, 32, width * 4, colorspace, kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast,
+                                    ref, NULL, true, kCGRenderingIntentDefault);
+    
+    UIGraphicsBeginImageContext(CGSizeMake(width, height));
+    CGContextRef cgcontext = UIGraphicsGetCurrentContext();
+    CGContextSetBlendMode(cgcontext, kCGBlendModeCopy);
+    CGContextDrawImage(cgcontext, CGRectMake(0.0, 0.0, width, height), iref);
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    NSLog(@"image size: %f---%f  \nscreenSize: %f---%f",image.size.width,image.size.height,self.view.frame.size.width,self.view.frame.size.height);
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+    imageView.image = image;
+    imageView.contentMode = UIViewContentModeScaleAspectFit;
+    imageView.backgroundColor = [UIColor redColor];
+    [self.view addSubview:imageView];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [imageView removeFromSuperview];
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
+        glViewport(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+    });
+    UIGraphicsEndImageContext();
+    
+    free(data);
+    CFRelease(ref);
+    CFRelease(colorspace);
+    CGImageRelease(iref);
 }
 
 #pragma mark - Action
+
+- (IBAction)offScreenAction:(UIButton *)sender {
+    UIImage *image = [UIImage imageNamed:picName];
+    [self createOffscreenBuffer:image];
+    glBindFramebuffer(GL_FRAMEBUFFER, _offscreenFramebuffer);
+    glViewport(0, 0, image.size.width, image.size.height);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    glUseProgram(_programHandle);
+    
+    [self drawRaw];
+    
+    [self getImageFromBuffer:image.size.width withHeight:image.size.height];
+}
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     self.backView.hidden = !self.backView.hidden;
@@ -254,7 +348,7 @@
 }
 
 - (void)setTexture{
-    glDeleteTextures(1, &texName);
+//    glDeleteTextures(1, &texName);
     
     /***  Generate Texture   ***/
     texName = [self getTextureFromImage:[UIImage imageNamed:picName]];
@@ -298,6 +392,41 @@
     CGColorSpaceRelease(colorSpace);
     free(textureData);
     return texName;
+}
+
+- (void)drawRaw {
+    [self setTexture];
+    
+    const GLfloat vertices[] = {
+        -1, -1, 0,   //左下
+        1,  -1, 0,   //右下
+        -1, 1,  0,   //左上
+        1,  1,  0 }; //右上
+    glEnableVertexAttribArray(_positionSlot);
+    glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, GL_FALSE, 0, vertices);
+    
+    // normal
+    static const GLfloat coords[] = {
+        0, 0,
+        1, 0,
+        0, 1,
+        1, 1
+    };
+    
+    glEnableVertexAttribArray(_textureCoordSlot);
+    glVertexAttribPointer(_textureCoordSlot, 2, GL_FLOAT, GL_FALSE, 0, coords);
+    
+    static const GLfloat colors[] = {
+        1, 0, 0, 1,
+        1, 0, 0, 1,
+        1, 0, 0, 1,
+        1, 0, 0, 1
+    };
+    
+    glEnableVertexAttribArray(_colorSlot);
+    glVertexAttribPointer(_colorSlot, 4, GL_FLOAT, GL_FALSE, 0, colors);
+    
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
 - (void)drawTrangle {
@@ -354,6 +483,7 @@
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     [_eaglContext presentRenderbuffer:GL_RENDERBUFFER];
+    //此处相当于将OpenGL渲染的buffer present到context上，会保存下来
 }
 
 - (void)didReceiveMemoryWarning {
