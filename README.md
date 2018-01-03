@@ -1,4 +1,4 @@
-# Open GL Review
+# OpenGL Review
 
 **Summary**
 ---
