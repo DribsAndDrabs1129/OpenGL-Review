@@ -24,6 +24,10 @@
 
 - use OpenGL ES shader to blur an image (motion blur)
 
+*Jan 3, 2017*
+
+- add gaussian blur,  sharpen, Dilate and erode
+
 **Write in the end**
 ---
 
