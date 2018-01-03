@@ -26,7 +26,7 @@
 
 *Jan 3, 2017*
 
-- add gaussian blur,  sharpen, Dilate and erode
+- add gaussian blur,  sharpen, dilate and erode
 
 **Write in the end**
 ---
