@@ -21,8 +21,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    titleArr = @[@"With Shader",@"Without Shader",@"Real Time",@"With filter"];
-    viewControllerID = @[@"FirstViewController",@"SecondViewController",@"ThirdViewController",@"ForthViewController"];
+    titleArr = @[@"With Shader",@"Without Shader",@"Real Time",@"With filter",@"Blur and effect"];
+    viewControllerID = @[@"FirstViewController",@"SecondViewController",@"ThirdViewController",@"ForthViewController",@"FifthViewController"];
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;

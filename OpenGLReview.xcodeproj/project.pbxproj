@@ -16,6 +16,9 @@
 		950C73151FDA632D0040B591 /* AGLKContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 950C730F1FDA632C0040B591 /* AGLKContext.m */; };
 		950C73161FDA632D0040B591 /* AGLKVertexAttribArrayBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 950C73101FDA632C0040B591 /* AGLKVertexAttribArrayBuffer.m */; };
 		950C73191FDA7D650040B591 /* ThirdViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 950C73181FDA7D650040B591 /* ThirdViewController.m */; };
+		951179001FFC70BB002E7BAD /* BlurFragment.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 951178FF1FFC70BB002E7BAD /* BlurFragment.fsh */; };
+		951179021FFC712A002E7BAD /* BlurVertex.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 951179011FFC712A002E7BAD /* BlurVertex.vsh */; };
+		951179051FFC7D96002E7BAD /* FifthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 951179041FFC7D96002E7BAD /* FifthViewController.m */; };
 		953BA1D21FD8E2130072293E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 953BA1D11FD8E2130072293E /* AppDelegate.m */; };
 		953BA1D51FD8E2130072293E /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 953BA1D41FD8E2130072293E /* FirstViewController.m */; };
 		953BA1D81FD8E2130072293E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 953BA1D61FD8E2130072293E /* Main.storyboard */; };
@@ -70,6 +73,10 @@
 		950C73131FDA632C0040B591 /* AGLKVertexAttribArrayBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGLKVertexAttribArrayBuffer.h; sourceTree = "<group>"; };
 		950C73171FDA7D650040B591 /* ThirdViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThirdViewController.h; sourceTree = "<group>"; };
 		950C73181FDA7D650040B591 /* ThirdViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThirdViewController.m; sourceTree = "<group>"; };
+		951178FF1FFC70BB002E7BAD /* BlurFragment.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = BlurFragment.fsh; sourceTree = "<group>"; };
+		951179011FFC712A002E7BAD /* BlurVertex.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = BlurVertex.vsh; sourceTree = "<group>"; };
+		951179031FFC7D96002E7BAD /* FifthViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FifthViewController.h; sourceTree = "<group>"; };
+		951179041FFC7D96002E7BAD /* FifthViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FifthViewController.m; sourceTree = "<group>"; };
 		953BA1CD1FD8E2130072293E /* OpenGLReview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenGLReview.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		953BA1D01FD8E2130072293E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		953BA1D11FD8E2130072293E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -168,6 +175,8 @@
 				953BA1D11FD8E2130072293E /* AppDelegate.m */,
 				950C73021FDA20510040B591 /* TableViewController.h */,
 				950C73031FDA20510040B591 /* TableViewController.m */,
+				951179031FFC7D96002E7BAD /* FifthViewController.h */,
+				951179041FFC7D96002E7BAD /* FifthViewController.m */,
 				957D0EB41FE23D5B0081AD95 /* ForthViewController.h */,
 				957D0EB51FE23D5C0081AD95 /* ForthViewController.m */,
 				950C73171FDA7D650040B591 /* ThirdViewController.h */,
@@ -234,6 +243,8 @@
 			children = (
 				957D0EAB1FE20E400081AD95 /* MotionBlurVertex.vsh */,
 				957D0EAC1FE20E400081AD95 /* MotionBlurFragment.fsh */,
+				951178FF1FFC70BB002E7BAD /* BlurFragment.fsh */,
+				951179011FFC712A002E7BAD /* BlurVertex.vsh */,
 			);
 			path = filterShader;
 			sourceTree = "<group>";
@@ -351,11 +362,13 @@
 				953BA1DD1FD8E2130072293E /* LaunchScreen.storyboard in Resources */,
 				95CCC3F91FDE1B90003C0487 /* luminanceBGRA.fsh in Resources */,
 				953BA21B1FD9089C0072293E /* vertexShader.vsh in Resources */,
+				951179021FFC712A002E7BAD /* BlurVertex.vsh in Resources */,
 				957D0EAE1FE20E400081AD95 /* MotionBlurVertex.vsh in Resources */,
 				953BA2131FD9087D0072293E /* 3.png in Resources */,
 				953BA21A1FD9089C0072293E /* luminance.fsh in Resources */,
 				953BA1DA1FD8E2130072293E /* Assets.xcassets in Resources */,
 				953BA2141FD9087D0072293E /* 4.jpg in Resources */,
+				951179001FFC70BB002E7BAD /* BlurFragment.fsh in Resources */,
 				950157871FDE5EB90032B3B1 /* 5.jpg in Resources */,
 				950157881FDE5EB90032B3B1 /* 7.jpg in Resources */,
 				953BA2111FD9087D0072293E /* 1.jpg in Resources */,
@@ -387,6 +400,7 @@
 				957D0EB61FE23D5C0081AD95 /* ForthViewController.m in Sources */,
 				950C730A1FDA387F0040B591 /* SecondViewController.m in Sources */,
 				950C73141FDA632D0040B591 /* ZQLShaderCompiler.m in Sources */,
+				951179051FFC7D96002E7BAD /* FifthViewController.m in Sources */,
 				950C73151FDA632D0040B591 /* AGLKContext.m in Sources */,
 				953BA1D51FD8E2130072293E /* FirstViewController.m in Sources */,
 				950C73161FDA632D0040B591 /* AGLKVertexAttribArrayBuffer.m in Sources */,

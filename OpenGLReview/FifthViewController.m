@@ -1,18 +1,18 @@
 //
-//  ViewController.m
+//  FifthViewController.m
 //  OpenGLReview
 //
-//  Created by Channe Sun on 2017/12/7.
-//  Copyright © 2017年 HUST. All rights reserved.
+//  Created by Channe Sun on 2018/1/3.
+//  Copyright © 2018年 HUST. All rights reserved.
 //
 
-#import "FirstViewController.h"
+#import "FifthViewController.h"
 #import <OpenGLES/ES2/gl.h>
 #import <AVFoundation/AVFoundation.h>
 
 #define  TEST_PIC_NAME @"blue.png"
 
-@interface FirstViewController ()
+@interface FifthViewController ()
 {
     EAGLContext *_eaglContext;
     CAEAGLLayer *_eaglLayer;
@@ -25,63 +25,105 @@
     GLuint _textureSlot;
     GLuint _textureCoordSlot;
     GLuint _colorSlot;
-    GLuint _saturation;
-    GLuint _brightness;
-    GLuint _enableGrayScale;
-    GLuint _enableNegation;
+    
+    GLuint _enableBlur;
+    GLuint _blurType;
+    GLuint _tcOffset;
     
     GLuint _programHandle;
     GLuint _offscreenFramebuffer;
     
-    int grayScalePara;          // 0 or 1
-    int negationPara;           // 0 or 1
-    CGFloat saturationPara;
-    CGFloat brightnessPara;
+    int blurTypePara;           //0 gaussian blur
+    int enableBlurPara;         //0 disable; 1 enable
+    
+    GLfloat blurStep;
     
     NSArray *picNameArr;
+    NSArray *blurTypeArr;
     NSString *picName;
 }
 
 @end
 
-@implementation FirstViewController
+@implementation FifthViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    grayScalePara = 0.0;
-    negationPara = 0;
-    saturationPara = 1.0;
-    brightnessPara = 0.0;
+    enableBlurPara = 1;
+    blurTypePara = 0;
+    blurStep = 0.0f;
     
     picNameArr = @[@"1.jpg",@"2.jpg",@"3.png",@"4.jpg",@"5.jpg",@"6.jpg",@"7.jpg"];
-    
+    blurTypeArr = @[@"Gaussian",@"Median Filter",@"Sharpen",@"Dilate",@"Erode"];
     picName = picNameArr[2];
     
     [self setupOpenGL];
-
+    
     [self setRenderBuffer];
-
+    
     [self setViewPort];
-
+    
     [self setShader];
-
+    
     [self setTexture];
-
-    [self drawTrangle];
+    
+//    [self drawTrangle];
     
     [self.view bringSubviewToFront:self.backView];
-    
-    UIImage *image = [UIImage imageNamed:picName];
-    
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Tips" message:@"Test original read image buffer" preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Tips" message:@"Test Gaussian blur" preferredStyle:UIAlertControllerStyleAlert];
     [self presentViewController:alert animated:YES completion:nil];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [alert dismissViewControllerAnimated:YES completion:nil];
-        [self drawRaw];
-        [self getImageFromBuffer:image.size.width withHeight:image.size.height];
+        [self drawTrangle];
     });
+}
+
+#pragma mark - Action
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+    self.backView.hidden = !self.backView.hidden;
+    self.navigationController.navigationBarHidden = !self.navigationController.navigationBarHidden;
+}
+
+- (IBAction)blurTypeAction:(id)sender {
+    blurTypePara ++;
+    blurTypePara = blurTypePara % blurTypeArr.count;
+    [self.blurTypeButton setTitle:blurTypeArr[blurTypePara] forState:UIControlStateNormal];
+}
+
+- (IBAction)changeAction:(UIButton *)sender {
+    NSInteger index = [picNameArr indexOfObject:picName];
+    picName = [picNameArr objectAtIndex:(index + 1)%picNameArr.count];
+    
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    [self setTexture];
+    
+    [self drawTrangle];
+}
+
+- (IBAction)switchValueChanged:(UISwitch *)sender {
+    if (_blurSwitch == sender) {
+        enableBlurPara = sender.on ? 1 : 0;
+    }
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    [self drawTrangle];
+}
+
+- (IBAction)valueChanged:(UISlider *)sender {
+    CGFloat temValue = sender.value;
+    blurStep = temValue;
+    
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    [self drawTrangle];
 }
 
 #pragma mark - OffScreen buffer
@@ -135,7 +177,7 @@
     imageView.contentMode = UIViewContentModeScaleAspectFit;
     imageView.backgroundColor = [UIColor redColor];
     [self.view addSubview:imageView];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [imageView removeFromSuperview];
         
         glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
@@ -149,71 +191,6 @@
     CFRelease(ref);
     CFRelease(colorspace);
     CGImageRelease(iref);
-}
-
-#pragma mark - Action
-
-- (IBAction)offScreenAction:(UIButton *)sender {
-    UIImage *image = [UIImage imageNamed:picName];
-    [self createOffscreenBuffer:image];
-    glBindFramebuffer(GL_FRAMEBUFFER, _offscreenFramebuffer);
-    glViewport(0, 0, image.size.width, image.size.height);
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    glUseProgram(_programHandle);
-    
-    [self drawRaw];
-    
-    [self getImageFromBuffer:image.size.width withHeight:image.size.height];
-}
-
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
-    self.backView.hidden = !self.backView.hidden;
-    self.navigationController.navigationBarHidden = !self.navigationController.navigationBarHidden;
-}
-
-- (IBAction)changeAction:(UIButton *)sender {
-    NSInteger index = [picNameArr indexOfObject:picName];
-    picName = [picNameArr objectAtIndex:(index + 1)%picNameArr.count];
-    
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    [self setTexture];
-
-    [self drawTrangle];
-}
-
-- (IBAction)switchValueChanged:(UISwitch *)sender {
-    if (_grayScaleSwitch == sender) {
-        grayScalePara = sender.on ? 1 : 0;
-    }
-    if (_negationSwitch == sender) {
-        negationPara = sender.on ? 1 : 0;
-    }
-    
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    [self drawTrangle];
-}
-
-- (IBAction)valueChanged:(UISlider *)sender {
-    CGFloat temValue = sender.value / 2.0;
-    if (_saturationSlider == sender) {
-        saturationPara = temValue + 1.0;
-        _saturationLabel.text = [NSString stringWithFormat:@"%.2f",temValue];
-    }
-    else if (_brightnessSlider == sender){
-        brightnessPara = temValue;
-        _brightnessLabel.text = [NSString stringWithFormat:@"%.2f",temValue];
-    }
-    
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    [self drawTrangle];
 }
 
 #pragma mark - OpenGL Relate
@@ -275,8 +252,8 @@
     NSString *vshName = nil;
     NSString *fshName = nil;
     
-    vshName = @"vertexShader.vsh";
-    fshName = @"luminance.fsh";
+    vshName = @"BlurVertex.vsh";
+    fshName = @"BlurFragment.fsh";
     
     GLuint vertexShaderName = [self compileShader:vshName withType:GL_VERTEX_SHADER];
     if (!vertexShaderName) {
@@ -312,10 +289,9 @@
     _colorSlot          = glGetAttribLocation(_programHandle, [@"in_Color" UTF8String]);
     
     //uniform
-    _saturation         = glGetUniformLocation(_programHandle, [@"saturation" UTF8String]);
-    _brightness         = glGetUniformLocation(_programHandle, [@"brightness" UTF8String]);
-    _enableGrayScale    = glGetUniformLocation(_programHandle, [@"greyScale" UTF8String]);
-    _enableNegation     = glGetUniformLocation(_programHandle, [@"negation" UTF8String]);
+    _enableBlur    = glGetUniformLocation(_programHandle, [@"enableBlur" UTF8String]);
+    _blurType     = glGetUniformLocation(_programHandle, [@"blurType" UTF8String]);
+    _tcOffset           = glGetUniformLocation(_programHandle, [@"tcOffset" UTF8String]);
     
     glUseProgram(_programHandle);
 }
@@ -347,7 +323,7 @@
 }
 
 - (void)setTexture{
-//    glDeleteTextures(1, &texName);
+    //    glDeleteTextures(1, &texName);
     
     /***  Generate Texture   ***/
     texName = [self getTextureFromImage:[UIImage imageNamed:picName]];
@@ -468,21 +444,39 @@
     glEnableVertexAttribArray(_colorSlot);
     glVertexAttribPointer(_colorSlot, 4, GL_FLOAT, GL_FALSE, 0, colors);
     
-    //灰度图
-    glUniform1i(_enableGrayScale, grayScalePara);
-
-    //取反
-    glUniform1i(_enableNegation, negationPara);
+    glUniform1i(_enableBlur, enableBlurPara);
     
-    //亮度
-    glUniform1f(_brightness, brightnessPara);
+    glUniform1i(_blurType, blurTypePara);
     
-    //色度
-    glUniform1f(_saturation, saturationPara);
-
+    [self generateOffset];
+    
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     [_eaglContext presentRenderbuffer:GL_RENDERBUFFER];
     //此处相当于将OpenGL渲染的buffer present到context上，会保存下来
+}
+
+- (void)generateOffset{
+    // Set up texture sampling offset storage
+    const GLint tcOffsetColumns = 5;
+    const GLint tcOffsetRows    = 5;
+    GLfloat   texCoordOffsets[tcOffsetColumns * tcOffsetRows * 2];
+    
+    // Calculate texture coordinate offsets for kernel convolution effects
+    // Note: You can multiply the step to displace the samples further. Do this with diff values horiz and vert and you have directional blur of a sort...
+    float xInc = blurStep / (GLfloat)(self.view.bounds.size.width);
+    float yInc = blurStep / (GLfloat)(self.view.bounds.size.height);
+    
+    for (int i = 0; i < tcOffsetColumns; i++)
+    {
+        for (int j = 0; j < tcOffsetRows; j++)
+        {
+            texCoordOffsets[(((i*5)+j)*2)+0] = (-2.0f * xInc) + ((GLfloat)i * xInc);
+            texCoordOffsets[(((i*5)+j)*2)+1] = (-2.0f * yInc) + ((GLfloat)j * yInc);
+        }
+    }
+    
+    //offset
+    glUniform2fv(_tcOffset, 50, texCoordOffsets);
 }
 
 - (void)didReceiveMemoryWarning {
@@ -490,5 +484,14 @@
     // Dispose of any resources that can be recreated.
 }
 
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
 
 @end
