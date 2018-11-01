@@ -36,8 +36,8 @@ SceneVertex;
 {
     [super viewDidLoad];
     
-    picNameArr = @[@"1.jpg",@"2.jpg",@"3.png",@"4.jpg",@"5.jpg",@"6.jpg",@"7.jpg"];
-
+    picNameArr = @[@"1.jpg",@"2.jpg",@"3.png",@"4.jpg"];
+    
     picName = picNameArr[2];
     
     widthRatio = 1.0;

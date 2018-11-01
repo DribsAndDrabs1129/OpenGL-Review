@@ -10,8 +10,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <OpenGLES/ES2/gl.h>
 
-#define ViewWidth self.view.frame.size.width
-#define ViewHeight self.view.frame.size.height
+#define ViewWidth  [UIScreen mainScreen].bounds.size.width
+#define ViewHeight [UIScreen mainScreen].bounds.size.height
 
 @interface ThirdViewController ()<AVCaptureVideoDataOutputSampleBufferDelegate>{
     EAGLContext *_eaglContext;
@@ -44,6 +44,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    self.openGLView.frame = CGRectMake(0, ViewHeight/2.0, ViewWidth, ViewHeight/2.0);
     [self setupVideoSession];
     [self initOpenGL];
     [self.view bringSubviewToFront:self.openGLView];
@@ -473,27 +474,30 @@
     CGFloat widthRatio = realRect.size.width/self.openGLView.bounds.size.width;
     CGFloat heightRatio = realRect.size.height/self.openGLView.bounds.size.height;
     
-//    const GLfloat vertices[] = {
-//            -1.0, -1, 0,   //左下
-//             1.0, -1, 0,   //右下
-//            -1.0,  1, 0,   //左上
-//             1.0,  1, 0 }; //右上
+    //    const GLfloat vertices[] = {
+    //        -1, -1, 0,   //左下
+    //        1,  -1, 0,   //右下
+    //        -1, 1,  0,   //左上
+    //        1,  1,  0 }; //右上
     const GLfloat vertices[] = {
-        -widthRatio, -heightRatio,  0,   //左下
-         widthRatio, -heightRatio,  0,   //右下
-        -widthRatio,  heightRatio,  0,   //左上
-         widthRatio,  heightRatio,  0 }; //右上
+        -widthRatio, -heightRatio, 0,   //左下
+        widthRatio,  -heightRatio, 0,   //右下
+        -widthRatio, heightRatio,  0,   //左上
+        widthRatio,  heightRatio,  0 }; //右上
     glEnableVertexAttribArray(_positionSlot);
     glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, GL_FALSE, 0, vertices);
     
-    const int texCoordX = 0;
-    const int texCoordY = 1;
     // normal
     static const GLfloat coords[] = {
-            texCoordX,        texCoordY,          //左下
-        1 - texCoordX,        texCoordY,          //右下
-            texCoordX,    1 - texCoordY,          //左上
-        1 - texCoordX,    1 - texCoordY           //右上
+//        1, 0,
+//        1, 1,
+//        0, 0,
+//        0, 1
+        
+        0, 0,
+        1, 0,
+        0, 1,
+        1, 1
     };
     
     glEnableVertexAttribArray(_textureCoordSlot);
@@ -539,10 +543,7 @@
     glEnableVertexAttribArray(_enableNegation);
     glVertexAttribPointer(_enableNegation, 1, GL_FLOAT, GL_FALSE, 0, negation);
     
-    glClear(GL_COLOR_BUFFER_BIT);//若image与view 的bounds不匹配时，会出现边缘闪屏的情况
-    
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
     [_eaglContext presentRenderbuffer:GL_RENDERBUFFER];
 }
 

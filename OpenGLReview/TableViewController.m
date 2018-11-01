@@ -9,10 +9,6 @@
 #import "TableViewController.h"
 
 @interface TableViewController ()
-{
-    NSArray *titleArr;
-    NSArray *viewControllerID;
-}
 
 @end
 
@@ -20,9 +16,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    titleArr = @[@"With Shader",@"Without Shader",@"Real Time",@"With filter",@"Blur and effect"];
-    viewControllerID = @[@"FirstViewController",@"SecondViewController",@"ThirdViewController",@"ForthViewController",@"FifthViewController"];
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -39,7 +32,15 @@
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    [self performSegueWithIdentifier:viewControllerID[indexPath.row] sender:nil];
+    if (indexPath.row == 0) {
+        [self performSegueWithIdentifier:@"FirstViewController" sender:nil];
+    }
+    else if (indexPath.row == 1){
+        [self performSegueWithIdentifier:@"SecondViewController" sender:nil];
+    }
+    else if (indexPath.row == 2){
+        [self performSegueWithIdentifier:@"ThirdViewController" sender:nil];
+    }
 }
 
 #pragma mark - Table view data source
@@ -51,15 +52,23 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 #warning Incomplete implementation, return the number of rows
-    return titleArr.count;
+    return 3;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
     
     // Configure the cell...
-    cell.textLabel.text = titleArr[indexPath.row];
-
+    if (indexPath.row == 0) {
+        cell.textLabel.text = @"With Shader";
+    }
+    else if (indexPath.row == 1){
+        cell.textLabel.text = @"Without Shader";
+    }
+    else if (indexPath.row == 2){
+        cell.textLabel.text = @"Real Time";
+    }
+    
     return cell;
 }
 

@@ -25,16 +25,14 @@
     GLuint _textureSlot;
     GLuint _textureCoordSlot;
     GLuint _colorSlot;
-    GLuint _saturation;
-    GLuint _brightness;
+    GLuint _Saturation_brightness;
     GLuint _enableGrayScale;
     GLuint _enableNegation;
     
     GLuint _programHandle;
-    GLuint _offscreenFramebuffer;
     
-    int grayScalePara;          // 0 or 1
-    int negationPara;           // 0 or 1
+    CGFloat grayScalePara;          // 0 or 1
+    CGFloat negationPara;           // 0 or 1
     CGFloat saturationPara;
     CGFloat brightnessPara;
     
@@ -51,11 +49,11 @@
     // Do any additional setup after loading the view, typically from a nib.
     
     grayScalePara = 0.0;
-    negationPara = 0;
+    negationPara = 0.0;
     saturationPara = 1.0;
     brightnessPara = 0.0;
     
-    picNameArr = @[@"1.jpg",@"2.jpg",@"3.png",@"4.jpg",@"5.jpg",@"6.jpg",@"7.jpg"];
+    picNameArr = @[@"1.jpg",@"2.jpg",@"3.png",@"4.jpg"];
     
     picName = picNameArr[2];
     
@@ -72,105 +70,12 @@
     [self drawTrangle];
     
     [self.view bringSubviewToFront:self.backView];
-    
-    UIImage *image = [UIImage imageNamed:picName];
-    
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Tips" message:@"Test original read image buffer" preferredStyle:UIAlertControllerStyleAlert];
-    [self presentViewController:alert animated:YES completion:nil];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [alert dismissViewControllerAnimated:YES completion:nil];
-        [self drawRaw];
-        [self getImageFromBuffer:image.size.width withHeight:image.size.height];
-    });
-}
-
-#pragma mark - OffScreen buffer
-- (void)createOffscreenBuffer:(UIImage *)image {
-    glGenFramebuffers(1, &_offscreenFramebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, _offscreenFramebuffer);
-    
-    //Create the texture
-    GLuint texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,  image.size.width, image.size.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    
-    //Bind the texture to your FBO
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
-    
-    //Test if everything failed
-    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if(status != GL_FRAMEBUFFER_COMPLETE) {
-        printf("failed to make complete framebuffer object %x", status);
-    }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-- (void)getImageFromBuffer:(int)width withHeight:(int)height {
-    GLint x = 0, y = 0;
-    NSInteger dataLength = width * height * 4;
-    GLubyte *data = (GLubyte*)malloc(dataLength * sizeof(GLubyte));
-    
-    glPixelStorei(GL_PACK_ALIGNMENT, 4);
-    glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    
-    CGDataProviderRef ref = CGDataProviderCreateWithData(NULL, data, dataLength, NULL);
-    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
-    CGImageRef iref = CGImageCreate(width, height, 8, 32, width * 4, colorspace, kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast,
-                                    ref, NULL, true, kCGRenderingIntentDefault);
-    
-    UIGraphicsBeginImageContext(CGSizeMake(width, height));
-    CGContextRef cgcontext = UIGraphicsGetCurrentContext();
-    CGContextSetBlendMode(cgcontext, kCGBlendModeCopy);
-    CGContextDrawImage(cgcontext, CGRectMake(0.0, 0.0, width, height), iref);
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    NSLog(@"image size: %f---%f  \nscreenSize: %f---%f",image.size.width,image.size.height,self.view.frame.size.width,self.view.frame.size.height);
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-    imageView.image = image;
-    imageView.contentMode = UIViewContentModeScaleAspectFit;
-    imageView.backgroundColor = [UIColor redColor];
-    [self.view addSubview:imageView];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [imageView removeFromSuperview];
-        
-        glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
-        glViewport(0, 0, self.view.frame.size.width, self.view.frame.size.height);
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-    });
-    UIGraphicsEndImageContext();
-    
-    free(data);
-    CFRelease(ref);
-    CFRelease(colorspace);
-    CGImageRelease(iref);
 }
 
 #pragma mark - Action
 
-- (IBAction)offScreenAction:(UIButton *)sender {
-    UIImage *image = [UIImage imageNamed:picName];
-    [self createOffscreenBuffer:image];
-    glBindFramebuffer(GL_FRAMEBUFFER, _offscreenFramebuffer);
-    glViewport(0, 0, image.size.width, image.size.height);
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    glUseProgram(_programHandle);
-    
-    [self drawRaw];
-    
-    [self getImageFromBuffer:image.size.width withHeight:image.size.height];
-}
-
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
     self.backView.hidden = !self.backView.hidden;
-    self.navigationController.navigationBarHidden = !self.navigationController.navigationBarHidden;
 }
 
 - (IBAction)changeAction:(UIButton *)sender {
@@ -187,10 +92,10 @@
 
 - (IBAction)switchValueChanged:(UISwitch *)sender {
     if (_grayScaleSwitch == sender) {
-        grayScalePara = sender.on ? 1 : 0;
+        grayScalePara = sender.on ? 1.0 : 0;
     }
     if (_negationSwitch == sender) {
-        negationPara = sender.on ? 1 : 0;
+        negationPara = sender.on ? 1.0 : 0;
     }
     
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -272,23 +177,9 @@
 }
 
 - (void)setShader{
-    NSString *vshName = nil;
-    NSString *fshName = nil;
-    
-    vshName = @"vertexShader.vsh";
-    fshName = @"luminance.fsh";
-    
-    GLuint vertexShaderName = [self compileShader:vshName withType:GL_VERTEX_SHADER];
-    if (!vertexShaderName) {
-        NSLog(@"vsh complie error");
-        return;
-    }
-    
-    GLuint fragmenShaderName = [self compileShader:fshName withType:GL_FRAGMENT_SHADER];
-    if (!fragmenShaderName) {
-        NSLog(@"fsh complie error");
-        return;
-    }
+    GLuint vertexShaderName = [self compileShader:@"vertexShader.vsh" withType:GL_VERTEX_SHADER];
+//    GLuint fragmenShaderName = [self compileShader:@"fragmentShader.fsh" withType:GL_FRAGMENT_SHADER];
+    GLuint fragmenShaderName = [self compileShader:@"luminance.fsh" withType:GL_FRAGMENT_SHADER];
     
     _programHandle = glCreateProgram();
     glAttachShader(_programHandle, vertexShaderName);
@@ -306,16 +197,13 @@
         exit(1);
     }
     
-    _positionSlot       = glGetAttribLocation(_programHandle,[@"in_Position" UTF8String]);
-    _textureSlot        = glGetUniformLocation(_programHandle, [@"in_Texture" UTF8String]);
-    _textureCoordSlot   = glGetAttribLocation(_programHandle, [@"in_TexCoord" UTF8String]);
-    _colorSlot          = glGetAttribLocation(_programHandle, [@"in_Color" UTF8String]);
-    
-    //uniform
-    _saturation         = glGetUniformLocation(_programHandle, [@"saturation" UTF8String]);
-    _brightness         = glGetUniformLocation(_programHandle, [@"brightness" UTF8String]);
-    _enableGrayScale    = glGetUniformLocation(_programHandle, [@"greyScale" UTF8String]);
-    _enableNegation     = glGetUniformLocation(_programHandle, [@"negation" UTF8String]);
+    _positionSlot = glGetAttribLocation(_programHandle,[@"in_Position" UTF8String]);
+    _textureSlot = glGetUniformLocation(_programHandle, [@"in_Texture" UTF8String]);
+    _textureCoordSlot = glGetAttribLocation(_programHandle, [@"in_TexCoord" UTF8String]);
+    _colorSlot = glGetAttribLocation(_programHandle, [@"in_Color" UTF8String]);
+    _Saturation_brightness = glGetAttribLocation(_programHandle, [@"in_Saturation_Brightness" UTF8String]);
+    _enableGrayScale = glGetAttribLocation(_programHandle, [@"in_greyScale" UTF8String]);
+    _enableNegation = glGetAttribLocation(_programHandle, [@"in_negation" UTF8String]);
     
     glUseProgram(_programHandle);
 }
@@ -347,7 +235,7 @@
 }
 
 - (void)setTexture{
-//    glDeleteTextures(1, &texName);
+    glDeleteTextures(1, &texName);
     
     /***  Generate Texture   ***/
     texName = [self getTextureFromImage:[UIImage imageNamed:picName]];
@@ -393,41 +281,6 @@
     return texName;
 }
 
-- (void)drawRaw {
-    [self setTexture];
-    
-    const GLfloat vertices[] = {
-        -1, -1, 0,   //左下
-        1,  -1, 0,   //右下
-        -1, 1,  0,   //左上
-        1,  1,  0 }; //右上
-    glEnableVertexAttribArray(_positionSlot);
-    glVertexAttribPointer(_positionSlot, 3, GL_FLOAT, GL_FALSE, 0, vertices);
-    
-    // normal
-    static const GLfloat coords[] = {
-        0, 0,
-        1, 0,
-        0, 1,
-        1, 1
-    };
-    
-    glEnableVertexAttribArray(_textureCoordSlot);
-    glVertexAttribPointer(_textureCoordSlot, 2, GL_FLOAT, GL_FALSE, 0, coords);
-    
-    static const GLfloat colors[] = {
-        1, 0, 0, 1,
-        1, 0, 0, 1,
-        1, 0, 0, 1,
-        1, 0, 0, 1
-    };
-    
-    glEnableVertexAttribArray(_colorSlot);
-    glVertexAttribPointer(_colorSlot, 4, GL_FLOAT, GL_FALSE, 0, colors);
-    
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-}
-
 - (void)drawTrangle {
     UIImage *image = [UIImage imageNamed:picName];
     CGRect realRect = AVMakeRectWithAspectRatioInsideRect(image.size, self.view.bounds);
@@ -468,21 +321,38 @@
     glEnableVertexAttribArray(_colorSlot);
     glVertexAttribPointer(_colorSlot, 4, GL_FLOAT, GL_FALSE, 0, colors);
     
+    //亮度，色度
+    GLfloat saturation_brightness[] = {
+        saturationPara, brightnessPara,
+        saturationPara, brightnessPara,
+        saturationPara, brightnessPara,
+        saturationPara, brightnessPara
+    };
+    glEnableVertexAttribArray(_Saturation_brightness);
+    glVertexAttribPointer(_Saturation_brightness, 2, GL_FLOAT, GL_FALSE, 0, saturation_brightness);
+    
     //灰度图
-    glUniform1i(_enableGrayScale, grayScalePara);
-
+    GLfloat grayScale[] = {
+        grayScalePara,
+        grayScalePara,
+        grayScalePara,
+        grayScalePara
+    };
+    glEnableVertexAttribArray(_enableGrayScale);
+    glVertexAttribPointer(_enableGrayScale, 1, GL_FLOAT, GL_FALSE, 0, grayScale);
+    
     //取反
-    glUniform1i(_enableNegation, negationPara);
+    GLfloat negation[] = {
+        negationPara,
+        negationPara,
+        negationPara,
+        negationPara
+    };
+    glEnableVertexAttribArray(_enableNegation);
+    glVertexAttribPointer(_enableNegation, 1, GL_FLOAT, GL_FALSE, 0, negation);
     
-    //亮度
-    glUniform1f(_brightness, brightnessPara);
-    
-    //色度
-    glUniform1f(_saturation, saturationPara);
-
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     [_eaglContext presentRenderbuffer:GL_RENDERBUFFER];
-    //此处相当于将OpenGL渲染的buffer present到context上，会保存下来
 }
 
 - (void)didReceiveMemoryWarning {
